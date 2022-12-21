@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_15-45.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/17 13:47:19 by inoteboo          #+#    #+#             */
-/*   Updated: 2022/12/21 17:23:38 by inoteboo         ###   ########.fr       */
+/*   Updated: 2022/12/21 15:45:38 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,68 +20,74 @@
 # define BUFFER_SIZE 10
 #endif
 
-char	*buffer_fill(int fd, int *p, int *x)
-{
-	int		i;
-	int		end;
-	char	*buffer;
 
-	end = 0;
+char *buffer_fill(int fd, char *buffer, int *p, int *x)
+{
+	int i;
+
 	i = 0;
-	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	while (i < BUFFER_SIZE)
-	{	
-		if ((read(fd, buffer, 1)) == 0)
-			return ((*p = 2), buffer - i);
-		if (*buffer == '\n')
-			return ((*p = 1), buffer - i);
+		{	
+		read(fd, buffer, 1);
+		if (*buffer == '\n' || *buffer == '\0')
+		{
+			*p = 1;
+			break ;
+		}
 		*x += 1;
 		i++;
 		buffer++;
-	}
-	return ((free (buffer)), buffer - i);
+		}
+		return (buffer -i);
 }
 
-char	*get_next_line(int fd)
+
+
+char *get_next_line(int fd)
 {
-	char	*line_store;
-	int		i;
-	int		end;
-	int		*p;
-	int		*x;
+	char *buffer;
+	char *line_store;
+	int i;
+	int end;
+	int *p;
+	int *x;
 
 	p = &end;
 	x = &i;
 	i = 0;
 	end = 0;
-	
+	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	line_store = malloc(sizeof(char) * 1000);
 	while (end == 0)
-	{
-		strlcat(line_store, (buffer_fill(fd, p, x)), i + 1);
-		//free (buffer_fill(fd, p, x));
-	}
-	if (end == 2)
-		return (NULL);
-	return (/*(free (line_store)),*/ line_store);
+		{
+		buffer = buffer_fill(fd, buffer, p, x);
+		strlcat(line_store, buffer, i + 1);
+		}
+		
+	free (buffer);
+	printf("\nline_store = :%s\n", line_store);
+
+	return (line_store);
 }
 
-int	main(void)
+int main()
 {
-	int	fd;
+	int fd;
 
 	fd = open ("log.txt", O_RDONLY);
-	printf("line 1:%s\n", get_next_line(fd));
-	sleep (1);
-	printf("line 2:%s\n", get_next_line(fd));
-	sleep (1);
-	printf("line 3:%s\n", get_next_line(fd));
-	sleep (1);
-	printf("line 4:%s\n", get_next_line(fd));
-	sleep (1);
-	printf("line 5:%s\n", get_next_line(fd));
-	sleep (1);
-	printf("line 6:%s\n", get_next_line(fd));
+	
+	get_next_line(fd);
+	sleep (2);
+	get_next_line(fd);
+	sleep (2);
+	get_next_line(fd);
+	sleep (2);
+	get_next_line(fd);
+	sleep (2);
+	get_next_line(fd);
+	sleep (2);
+	get_next_line(fd);
+	
 	close (fd);
 	return (0);
 }

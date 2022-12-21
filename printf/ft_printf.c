@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/26 14:18:24 by inoteboo          #+#    #+#             */
-/*   Updated: 2022/12/18 12:24:32 by inoteboo         ###   ########.fr       */
+/*   Updated: 2022/12/19 16:29:37 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ int	ft_printf(const char *str, ...)
 	va_start(args, str);
 	while (str[i])
 	{
-		if (str[i] == '%')
+		if (str[i] == '%' && str[i + 1] == '\0')
+			return (x);
+		if (str[i] == '%' && str[i])
 		{
 			format_write(args, str[i + 1], p);
 			i++;
@@ -54,20 +56,18 @@ int	ft_printf(const char *str, ...)
 			ft_putchar_ptr(str[i], p);
 		i++;
 		if (*p < 0)
-			return (-1);
+			return (va_end(args), -1);
 	}
-	va_end(args);
-	return (x);
+	return (va_end(args), x);
 }
 
-// int	main(void)
+// int main(void)
 // {
-// 	int	a = 7;
-// 	int	*p = &a;
-
-// 	//printf("%s", NULL);
-// 	ft_printf("\n%d %s %c %x %X %X %u %p %k %% \n", 123
-// , "AbC", 'c', 0xa123b, 0xa123b, 3145, 24, p, 1);
-// 	printf("\n%d %s %c %x %X %X %u %p %k %% \n", 123
-// , "AbC", 'c', 0xa123b, 0xa123b, 3145, 24, p, 1);
+// 	int printed_chars = 0;
+// 	int my_printed_chars = 0;
+// 	printed_chars = printf("%%%\0shouldnotseethis");
+// 	my_printed_chars = ft_printf("%%%\0shouldnotseethis");
+// 	printf("\n(number of printed char system printf: %i)\n", printed_chars);
+// 	printf("(numberof printed chath my ft_printf: %d)\n", my_printed_chars);
+// 	return (0);
 // }

@@ -1,3 +1,5 @@
 log 1: read data
 log 2: update data
-log 3: data error
+log 3: update data1
+log 4: update data2
+log 5: data error

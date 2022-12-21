@@ -1,0 +1,67 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   readline.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/12/19 11:15:16 by inoteboo          #+#    #+#             */
+/*   Updated: 2022/12/20 15:51:58 by inoteboo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <stdio.h>
+#include <stdbool.h>
+
+#define FILENAME_SIZE 1024
+#define MAX_LINE 2048
+
+int main()
+{
+	FILE *file;
+
+	char filename[FILENAME_SIZE];
+	char buffer[MAX_LINE];
+	int read_line;
+	bool keep_reading;
+	int current_line;
+
+	read_line = 0;
+	keep_reading = true;
+	current_line = 1;
+	
+	printf("file: ");
+	scanf("%s", filename);
+	
+	printf("read line: ");
+	scanf("%d", &read_line);
+
+	file = fopen(filename, "r");
+	if (file == NULL)
+	{
+		printf("error opening file.\n");
+		return (1);
+	}
+	
+	do
+	{
+		fgets(buffer, MAX_LINE, file);
+		
+		if (feof(file))
+		{
+			keep_reading = false;
+			printf("File %d lines long.\n", current_line - 1);
+			printf(" Couldn't find line %d.\n", read_line);
+		}
+		else if (current_line == read_line)
+		{
+			keep_reading = false;
+			printf("Line:\n%s", buffer);
+		}
+		current_line++;
+	} while (keep_reading);
+	
+	fclose(file);
+	
+	return (0);
+}

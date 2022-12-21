@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/21 18:49:54 by inoteboo          #+#    #+#             */
-/*   Updated: 2022/11/26 09:19:32 by inoteboo         ###   ########.fr       */
+/*   Updated: 2022/12/19 15:19:48 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ int	ft_atoi(const char *str)
 	return (c);
 }
 
-// int	main(void)
-// {
-// 	char	str[] = " -99999999";
+int	main(void)
+{
+	char	str[] = " -99999999";
 
-// 	printf("%d\n", ft_atoi(str));
-// 	printf("%d\n", atoi(str));
-// }
+	printf("%d\n", ft_atoi(str));
+	printf("%d\n", atoi(str));
+}
