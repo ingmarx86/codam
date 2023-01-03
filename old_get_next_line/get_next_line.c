@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/17 13:47:19 by inoteboo          #+#    #+#             */
-/*   Updated: 2023/01/03 15:39:47 by inoteboo         ###   ########.fr       */
+/*   Updated: 2023/01/03 09:38:48 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,6 @@
 # define BUFFER_SIZE 10
 #endif
 
-int	ft_find_char(const void *str, int c)
-{
-	unsigned char	*ptr;
-	int				i;
-
-	i = 0;
-
-	ptr = (unsigned char *)str;
-	while (*ptr)
-	{
-		if (*ptr == (unsigned char)c)
-			return (i);
-		ptr++;
-		i++;
-	}
-	return (0);
-}
-
 size_t	ft_strlen(const char *str)
 {
 	if (str == NULL)
@@ -48,22 +30,6 @@ size_t	ft_strlen(const char *str)
 	while (str[i] != '\0')
 		i++;
 	return (i);
-}
-
-size_t	ft_strlcpy(char *dest, char *src, size_t size)
-{
-	unsigned int	i;
-
-	i = 0;
-	if (size <= 0)
-		return (ft_strlen(src));
-	while (src[i] && i < (size - 1))
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (ft_strlen(src));
 }
 
 char	*ft_strjoin(const char *s1, const char *s2)
@@ -98,39 +64,48 @@ char	*ft_strjoin(const char *s1, const char *s2)
 
 char	*buffer_fill(int fd, int *end_ptr)
 {
-	int	i;
-	int			end;
-	char		*buffer;
-	static char	*line_store;
+	int		i;
+	int		end;
+	char	*buffer;
+	char	*line_store;
 	
 	i = 0;
 	end = 0;
-	//line_store = NULL;
+	line_store = NULL;
 	buffer = NULL;
 	
-	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	while (end == 0)
-	{	
-		if ((read(fd, buffer, BUFFER_SIZE)) == 0)
-		{
-			*end_ptr = 2;
-			break;
+	while(*end_ptr == 0)
+	{
+		// printf("buff adres B = %p\n", buffer);
+		buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+		// printf("buff adres A = %p\n", buffer);
+		while (i < BUFFER_SIZE)
+		{	
+			if ((read(fd, buffer, 1)) == 0)
+			{
+				*(buffer) = '\0';
+				*end_ptr = 2;
+				break;
+			}
+			if (*buffer == '\n')
+			{
+				*(buffer + 1) = '\0';
+				*end_ptr = 1;
+				break;
+			}
+			i++;
+			buffer++;
+			
 		}
-		line_store = ft_strjoin(line_store, buffer);
-		//printf("\nlinestore = %s\n", line_store);
-		i =  ft_find_char(line_store, '\n');
-		//printf("\ni = %d\n", i);
-		if (i != 0)
-			end = 1;
+		 
+		// printf("buff free adres = %p\n", buffer - i);
+		line_store = ft_strjoin(line_store, buffer - i);
+		free (buffer - i);
+		buffer = NULL;
+		i = 0;
 	}
-	free(buffer);
-	printf("\ni = %d\n", i);
-	ft_strlcpy(buffer, line_store, i + 2);
-	printf("\nlinestore B = %s\n\n", line_store);
-	ft_strlcpy(line_store, line_store + (i + 1), (ft_strlen(line_store) - (i - 1)));
-	printf("length = %zu\n", ft_strlen(line_store));
-	printf("\nlinestore A = %s\n\n", line_store);
-	return (buffer);
+
+	return (line_store);
 }
 
 char	*get_next_line(int fd)
@@ -154,17 +129,18 @@ int	main(void)
 	int	fd;
 
 	fd = open("log.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
+	printf("fd = %d\n", fd);
+	printf("line 1:%s", get_next_line(fd));
 	sleep (1);
-	printf("%s", get_next_line(fd));
-	sleep (1);
-	printf("%s", get_next_line(fd));
-	sleep (1);
-	printf("%s", get_next_line(fd));
-	sleep (1);
-	printf("%s", get_next_line(fd));
-	sleep (1);
-	printf("%s", get_next_line(fd));
+	printf("line 2:%s", get_next_line(fd));
+	// sleep (1);
+	// printf("line 3:%s", get_next_line(fd));
+	// sleep (1);
+	// printf("line 4:%s", get_next_line(fd));
+	// sleep (1);
+	// printf("line 5:%s", get_next_line(fd));
+	// sleep (1);
+	// printf("line 6:%s", get_next_line(fd));
 	close (fd);
 	return (0);
 }
