@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/17 13:47:19 by inoteboo          #+#    #+#             */
-/*   Updated: 2023/01/03 15:39:47 by inoteboo         ###   ########.fr       */
+/*   Updated: 2023/01/06 16:39:50 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,35 +102,38 @@ char	*buffer_fill(int fd, int *end_ptr)
 	int			end;
 	char		*buffer;
 	static char	*line_store;
+	char		*ret_buff;
 	
 	i = 0;
 	end = 0;
-	//line_store = NULL;
+	ret_buff = NULL;
 	buffer = NULL;
-	
+	printf("linestore0 =%p\n", line_store);
+	if (!line_store)
+	line_store = malloc(sizeof(char) * 1000000000);
 	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	while (end == 0)
 	{	
+		
 		if ((read(fd, buffer, BUFFER_SIZE)) == 0)
 		{
 			*end_ptr = 2;
 			break;
 		}
+		//printf("linestore =%s\n", line_store);
 		line_store = ft_strjoin(line_store, buffer);
-		//printf("\nlinestore = %s\n", line_store);
 		i =  ft_find_char(line_store, '\n');
-		//printf("\ni = %d\n", i);
 		if (i != 0)
 			end = 1;
 	}
+	
 	free(buffer);
-	printf("\ni = %d\n", i);
-	ft_strlcpy(buffer, line_store, i + 2);
-	printf("\nlinestore B = %s\n\n", line_store);
-	ft_strlcpy(line_store, line_store + (i + 1), (ft_strlen(line_store) - (i - 1)));
-	printf("length = %zu\n", ft_strlen(line_store));
-	printf("\nlinestore A = %s\n\n", line_store);
-	return (buffer);
+	ret_buff = malloc(sizeof(char) * (ft_strlen(line_store) + 1));
+	ft_strlcpy(ret_buff, line_store, i + 2);
+	line_store = line_store + (i + 1);
+	// printf("linestore2 =%p\n", ret_buff);
+		
+	return (ret_buff);
 }
 
 char	*get_next_line(int fd)
@@ -143,6 +146,8 @@ char	*get_next_line(int fd)
 	end = 0;
 	
 	line_store = buffer_fill(fd, end_ptr);
+	//printf("linestore3 =%p\n", line_store);
+	
 	
 	if (end == 2)
 		return (NULL);
@@ -155,16 +160,23 @@ int	main(void)
 
 	fd = open("log.txt", O_RDONLY);
 	printf("%s", get_next_line(fd));
+	//printf("linestore4 =%p\n", get_next_line(fd));
+	free (get_next_line(fd));
 	sleep (1);
 	printf("%s", get_next_line(fd));
+	free (get_next_line(fd));
 	sleep (1);
 	printf("%s", get_next_line(fd));
+	free (get_next_line(fd));
 	sleep (1);
 	printf("%s", get_next_line(fd));
+	free (get_next_line(fd));
 	sleep (1);
 	printf("%s", get_next_line(fd));
+	free (get_next_line(fd));
 	sleep (1);
 	printf("%s", get_next_line(fd));
+	free (get_next_line(fd));
 	close (fd);
 	return (0);
 }
