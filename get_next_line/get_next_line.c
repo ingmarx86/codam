@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/17 13:47:19 by inoteboo          #+#    #+#             */
-/*   Updated: 2023/01/06 16:39:50 by inoteboo         ###   ########.fr       */
+/*   Updated: 2023/02/11 17:10:40 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,17 @@
 # define BUFFER_SIZE 10
 #endif
 
+
+
 int	ft_find_char(const void *str, int c)
 {
 	unsigned char	*ptr;
 	int				i;
 
 	i = 0;
-
 	ptr = (unsigned char *)str;
+	if (*ptr == (unsigned char)c)
+		return (-1);
 	while (*ptr)
 	{
 		if (*ptr == (unsigned char)c)
@@ -96,87 +99,60 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	return (ptr);
 }
 
-char	*buffer_fill(int fd, int *end_ptr)
+char	*buffer_fill(int fd)
 {
-	int	i;
-	int			end;
+	int			i;
 	char		*buffer;
-	static char	*line_store;
+	char	*line_store;
 	char		*ret_buff;
 	
 	i = 0;
-	end = 0;
 	ret_buff = NULL;
 	buffer = NULL;
-	printf("linestore0 =%p\n", line_store);
-	if (!line_store)
-	line_store = malloc(sizeof(char) * 1000000000);
+	
 	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	while (end == 0)
+	while (i == 0)
 	{	
-		
 		if ((read(fd, buffer, BUFFER_SIZE)) == 0)
 		{
-			*end_ptr = 2;
-			break;
+			return (ret_buff);
 		}
-		//printf("linestore =%s\n", line_store);
 		line_store = ft_strjoin(line_store, buffer);
 		i =  ft_find_char(line_store, '\n');
-		if (i != 0)
-			end = 1;
 	}
-	
-	free(buffer);
-	ret_buff = malloc(sizeof(char) * (ft_strlen(line_store) + 1));
+	if (i == -1)
+		i = 0;
+	free (buffer);
+	ret_buff = malloc(sizeof(char) * i + 2);
 	ft_strlcpy(ret_buff, line_store, i + 2);
 	line_store = line_store + (i + 1);
-	// printf("linestore2 =%p\n", ret_buff);
 		
 	return (ret_buff);
 }
 
 char	*get_next_line(int fd)
 {
-	char	*line_store;
-	int		end;
-	int		*end_ptr;
+	char	*line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+		return NULL;
 	
-	end_ptr = &end;
-	end = 0;
+	line = buffer_fill(fd);
 	
-	line_store = buffer_fill(fd, end_ptr);
-	//printf("linestore3 =%p\n", line_store);
-	
-	
-	if (end == 2)
-		return (NULL);
-	return (line_store);
+	return (line);
 }
 
 int	main(void)
 {
 	int	fd;
 
-	fd = open("log.txt", O_RDONLY);
+	fd = open("log1.txt", O_RDONLY);
 	printf("%s", get_next_line(fd));
-	//printf("linestore4 =%p\n", get_next_line(fd));
-	free (get_next_line(fd));
-	sleep (1);
 	printf("%s", get_next_line(fd));
-	free (get_next_line(fd));
-	sleep (1);
 	printf("%s", get_next_line(fd));
-	free (get_next_line(fd));
-	sleep (1);
 	printf("%s", get_next_line(fd));
-	free (get_next_line(fd));
-	sleep (1);
 	printf("%s", get_next_line(fd));
-	free (get_next_line(fd));
-	sleep (1);
 	printf("%s", get_next_line(fd));
-	free (get_next_line(fd));
 	close (fd);
 	return (0);
 }
