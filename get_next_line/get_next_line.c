@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/17 13:47:19 by inoteboo          #+#    #+#             */
-/*   Updated: 2023/02/15 12:10:25 by inoteboo         ###   ########.fr       */
+/*   Updated: 2023/02/15 14:13:49 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,10 +128,10 @@ char	*buffer_fill(int fd)
 	{
 		buffer = calloc(sizeof(char) * (BUFFER_SIZE + 10), 1);
 		x += read(fd, buffer, BUFFER_SIZE);
-		if (x == 0)
+		if (x <= 0)
 			{
-			free (line_store);
 			line_store = NULL;
+			free (line_store);
 			free (buffer);
 			return (NULL);
 			}
