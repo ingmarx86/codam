@@ -6,7 +6,7 @@
 /*   By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/17 13:47:19 by inoteboo          #+#    #+#             */
-/*   Updated: 2023/02/11 17:10:40 by inoteboo         ###   ########.fr       */
+/*   Updated: 2023/02/15 12:10:25 by inoteboo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,29 +17,8 @@
 #include <string.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 10
+# define BUFFER_SIZE 3
 #endif
-
-
-
-int	ft_find_char(const void *str, int c)
-{
-	unsigned char	*ptr;
-	int				i;
-
-	i = 0;
-	ptr = (unsigned char *)str;
-	if (*ptr == (unsigned char)c)
-		return (-1);
-	while (*ptr)
-	{
-		if (*ptr == (unsigned char)c)
-			return (i);
-		ptr++;
-		i++;
-	}
-	return (0);
-}
 
 size_t	ft_strlen(const char *str)
 {
@@ -53,23 +32,52 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-size_t	ft_strlcpy(char *dest, char *src, size_t size)
+int	ft_find_char(const void *str, int x)
+{
+	unsigned char	*ptr;
+	int				i;
+	
+	i = 0;
+	ptr = (unsigned char *)str;
+	if (*ptr == '\n' || *ptr == '\0')
+		return (-1);
+	while (i < x)
+	{
+		if (*ptr == '\n' || *ptr == '\0')
+			return (i);
+		ptr++;
+		i++;
+	}
+	return (0);
+}
+
+char	*ft_strcpy(char *dest, char *src)
 {
 	unsigned int	i;
-
+	int x;
+	char			*ptr;
+	ptr = calloc(sizeof(char) * (ft_strlen(src) + 10), 1);
 	i = 0;
-	if (size <= 0)
-		return (ft_strlen(src));
-	while (src[i] && i < (size - 1))
+	x = 0;
+	while (src[i])
 	{
 		dest[i] = src[i];
 		i++;
+		if (src[i - 1] == '\n')
+		break;
 	}
 	dest[i] = '\0';
-	return (ft_strlen(src));
+	while (src[i])
+	{
+		ptr[x] = src[i];
+		x++;
+		i++;
+	}
+	free (src);
+	return (ptr);
 }
 
-char	*ft_strjoin(const char *s1, const char *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char			*ptr;
 	unsigned int	i;
@@ -77,7 +85,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 
 	i = 0;
 	x = 0;
-	ptr = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	ptr = calloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 10), 1);
 	
 	if (ptr == NULL)
 		return (NULL);
@@ -95,6 +103,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 		i++;
 		x++;
 	}
+	free (s1);
 	ptr[i] = '\0';
 	return (ptr);
 }
@@ -103,30 +112,39 @@ char	*buffer_fill(int fd)
 {
 	int			i;
 	char		*buffer;
-	char	*line_store;
+	static char	*line_store;
 	char		*ret_buff;
+	int			x;
+	
 	
 	i = 0;
 	ret_buff = NULL;
 	buffer = NULL;
-	
-	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+
+	if (line_store == NULL)
+		line_store = calloc(sizeof(char) * 1, 1);
+	x = ft_strlen(line_store);
 	while (i == 0)
-	{	
-		if ((read(fd, buffer, BUFFER_SIZE)) == 0)
-		{
-			return (ret_buff);
-		}
+	{
+		buffer = calloc(sizeof(char) * (BUFFER_SIZE + 10), 1);
+		x += read(fd, buffer, BUFFER_SIZE);
+		if (x == 0)
+			{
+			free (line_store);
+			line_store = NULL;
+			free (buffer);
+			return (NULL);
+			}
 		line_store = ft_strjoin(line_store, buffer);
-		i =  ft_find_char(line_store, '\n');
+		i =  ft_find_char(buffer, BUFFER_SIZE);
+		free (buffer);
 	}
 	if (i == -1)
 		i = 0;
-	free (buffer);
-	ret_buff = malloc(sizeof(char) * i + 2);
-	ft_strlcpy(ret_buff, line_store, i + 2);
-	line_store = line_store + (i + 1);
-		
+	ret_buff = malloc(sizeof(char) * x + 2);
+	line_store = ft_strcpy(ret_buff, line_store);
+	if (line_store == '\0')
+		free (line_store);
 	return (ret_buff);
 }
 
@@ -136,23 +154,27 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return NULL;
-	
+
 	line = buffer_fill(fd);
 	
 	return (line);
 }
 
-int	main(void)
-{
-	int	fd;
+// int	main(void)
+// {
+// 	int	fd;
 
-	fd = open("log1.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	close (fd);
-	return (0);
-}
+// 	fd = open("log.txt", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	close (fd);
+// 	return (0);
+// }
