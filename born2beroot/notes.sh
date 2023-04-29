@@ -6,7 +6,7 @@
 #    By: inoteboo <inoteboo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/11 09:11:27 by inoteboo          #+#    #+#              #
-#    Updated: 2023/02/08 08:45:03 by inoteboo         ###   ########.fr        #
+#    Updated: 2023/04/15 19:01:12 by inoteboo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,6 @@
 # delete user
 	sudo deluser [username]
 
-# create group
 	sudo groupadd [groupname]
 
 # delete group
@@ -199,14 +198,34 @@
 	On_IWhite='\033[0;107m'  
 
 
+
+
+wall -n <<.
+
+ ---------------------------------------------------------------------------
+| #Architecture:        `uname -v` `uname -m`        |
+| #CPU Physical:        `grep "physical id" /proc/cpuinfo | uniq | wc -l`                                                   |
+| #vCPU:                `grep "^processor" /proc/cpuinfo | wc -l`                              :::      ::::::::    |
+| #Memory Usage:        `free -m | awk '/Mem/{printf("%d/%dMB (%.2f%%)"), $3, $2, $3/$2*100}'`             :+:      :+:    :+:    |
+| #Disk Usage:          `df --total --human-readable | awk '/total/{printf("%s/%s (%s)"), $3, $2, $5}'`            +:+ +:+         :+:      |
+| #CPU Load:            `top -b -n1 | grep "%Cpu" | awk '{printf("%.1f%%\t"), $2 + $4}'`                 +#+  +:+       +#+         |
+| #Last boot:           `who -b | awk '{printf("%s %s"), $3, $4}'`       +#+#+#+#+#+   +#+            |
+| #LVM use:             `/sbin/lvdisplay | head -n8 | grep "LV Status" | awk '{print $3}'`                   #+#    #+#              |
+| #Connections TCP:     `netstat -ant | grep ESTABLISHED | wc -l`                          ###   ###########        |
+| #Users logged in:     `w -h | wc -l`                                                   |
+| #Network:             IP `/sbin/ifconfig | head -n5 | grep 'inet' | cut -d: -f2 | awk '{print $2}'` (`/sbin/ifconfig | head -n5 | grep 'ether' | cut -f2 | awk '{print $2}'`)                    |
+| #SUDO log count:      `cat /var/log/sudo/sudo.log | wc -l | awk '{printf("%s\t"), $1/2}'`                                            |
+ ---------------------------------------------------------------------------
+.
+
 echo ""
 echo "\033[32m ---------------------------------------------------------------------------\033[\0m"
 echo "\033[32m| \033[\0m#Architecture:\t"`uname -v` `uname -m`"\033[32m\t    |\033[\0m"
-echo "\033[32m| \033[\0m#CPU Physical:\t"`grep "physical id" /proc/cpuinfo | sort | uniq | wc -l`"\033[32m\t\t\t\t\t\t    |\033[\0m"
+echo "\033[32m| \033[\0m#CPU Physical:\t"`grep "physical id" /proc/cpuinfo | uniq | wc -l`"\033[32m\t\t\t\t\t\t    |\033[\0m"
 echo "\033[32m| \033[\0m#vCPU:\t\t"`grep "^processor" /proc/cpuinfo | wc -l`"\033[34m\t\t\t        :::      ::::::::\033[\0m\033[32m   |\033[\0m"
-echo "\033[32m| \033[\0m#Memory Usage:\t"`free | awk '/Mem/{printf("%d/%dMB (%.2f%%)"), $3, $2, $3/$2*100}'`"\033[34m\t      :+:      :+:    :+:\033[\0m\033[32m   |\033[\0m"
+echo "\033[32m| \033[\0m#Memory Usage:\t"`free -m | awk '/Mem/{printf("%d/%dMB (%.2f%%)"), $3, $2, $3/$2*100}'`"\033[34m\t      :+:      :+:    :+:\033[\0m\033[32m   |\033[\0m"
 echo "\033[32m| \033[\0m#Disk Usage:\t\t"`df --total --human-readable | awk '/total/{printf("%s/%s (%s)"), $3, $2, $5}'`"\033[34m\t\t    +:+ +:+         :+:\033[\0m\033[32m\t    |\033[\0m"
-echo "\033[32m| \033[\0m#CPU Load:\t\t"`top -b -n1 | grep "%Cpu" | awk '{printf("%.1f%%"), $2 + $4}'`"\033[34m\t\t\t  +#+  +:+       +#+\033[\0m\033[32m\t    |\033[\0m"
+echo "\033[32m| \033[\0m#CPU Load:\t\t"`top -b -n1 | grep "%Cpu" | awk '{printf("%.1f%%\t"), $2 + $4}'`"\033[34m\t\t\t  +#+  +:+       +#+\033[\0m\033[32m\t    |\033[\0m"
 echo "\033[32m| \033[\0m#Last boot:\t\t"`who -b | awk '{printf("%s %s"), $3, $4}'`"\033[34m\t+#+#+#+#+#+   +#+\033[\0m\033[32m\t    |\033[\0m"
 if mount | grep -q /dev/mapper/
 then
@@ -216,12 +235,5 @@ echo "\033[32m| \033[\0m#LVM use:\t\tno\033[34m\t\t\t     #+#    #+#\033[\0m\033
 fi
 echo "\033[32m| \033[\0m#Connections TCP:\t"`netstat -ant | grep ESTABLISHED | wc -l`"\033[34m\t\t\t    ###   ###########\033[\0m\033[32m\t    |\033[\0m"
 echo "\033[32m| \033[\0m#Users logged in:\t"`w -h | wc -l`"\033[32m\t\t\t\t\t\t    |\033[\0m"
-echo "\033[32m| \033[\0m#Network:\t\tIP "`sudo ifconfig | head -n5 | grep 'inet' | cut -d: -f2 | awk '{print $2}'` "("`sudo ifconfig | head -n5 | grep 'ether' | cut -f2 | awk '{print $2}'`>
+echo "\033[32m| \033[\0m#Network:\t\tIP "`/sbin/ifconfig | head -n5 | grep 'inet' | cut -d: -f2 | awk '{print $2}'` "("`/sbin/ifconfig | head -n5 | grep 'ether' | cut -f2 | awk '{print $2}'`")\033[32m\t\t    |\033[\0m"
 echo "\033[32m| \033[\0m#SUDO log count:\t"`cat /var/log/sudo/sudo.log | wc -l | awk '{printf("%s\n"), $1/2}'`"\033[32m\t\t\t\t\t\t    |\033[\0m"
-echo "\033[32m ---------------------------------------------------------------------------\033[\0m"
-echo ""
-
-
-chage for root
-what is tty
-sort in script nodig?
